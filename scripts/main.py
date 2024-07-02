@@ -58,6 +58,7 @@ class Scraper:
             event = EventLogger.log_event(e)
             handler_to_insert.insert_document(event)
 
+        print(data)
         if len(data) != 0:
             try:
                 for obj in data:
@@ -83,7 +84,6 @@ class Scraper:
                             "flightType": flight_type, 'airport': airport, 'source': source,
                             'destination': destination,
                             'currentDate': current_date}
-                print(data_obj)
                 data_to_save.append(data_obj)
 
         except Exception as e:
