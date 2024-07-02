@@ -58,7 +58,6 @@ class Scraper:
             event = EventLogger.log_event(e)
             handler_to_insert.insert_document(event)
 
-        print(data)
         if len(data) != 0:
             try:
                 for obj in data:
@@ -128,6 +127,7 @@ class Scraper:
 
             soup = BeautifulSoup(webpage, "lxml")
             scraped_data = soup.find_all("div", class_="DealARIADescriptor_DealARIADescriptor__YWUwN")
+            print(scraped_data)
         except Exception as e:
             event = EventLogger.log_event(e)
             handler_to_insert.insert_document(event)
