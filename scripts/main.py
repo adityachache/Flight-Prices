@@ -83,6 +83,7 @@ class Scraper:
                             "flightType": flight_type, 'airport': airport, 'source': source,
                             'destination': destination,
                             'currentDate': current_date}
+                print(data_obj)
                 data_to_save.append(data_obj)
 
         except Exception as e:
