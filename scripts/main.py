@@ -29,6 +29,8 @@ class DatabaseHandler:
         return self.collection.find_one(query)
 
     def insert_many_documents(self, documents_list):
+        if not documents_list:
+            raise ValueError("documents_list is empty, cannot insert into MongoDB")
         self.collection.insert_many(documents_list, ordered=True)
         print('data inserted in MongoDB')
 
@@ -98,6 +100,8 @@ class Scraper:
         handler_to_add = DatabaseHandler("ETL_Data", "Airline_Data")
         handler_to_insert = DatabaseHandler("ETL_Data", "Event_Log")
         try:
+            if not data_array:
+                raise ValueError("data_array is empty, cannot save to MongoDB")
             handler_to_add.insert_many_documents(data_array)
         except Exception as e:
             event = EventLogger.log_event(e)
@@ -134,7 +138,7 @@ class Scraper:
             handler_to_insert.insert_document(event)
 
         data_to_save = self.extract_data(scraped_data)
-        print(data_to_save)
+        print("Data to save:", data_to_save)  # Add this line to check if data_to_save is populated
 
         self.save_data_to_db(data_to_save)
 
