@@ -131,7 +131,7 @@ class Scraper:
             web_url = f"https://www.skyscanner.co.in/routes/{source_iata_code['value']}/{destination_iata_code['value']}/"
             service = Service('chromedriver.exe')  # Update path to chromedriver
             options = webdriver.ChromeOptions()
-            # options.add_argument('--headless')
+            options.add_argument('--headless')
             options.add_argument('--disable-gpu')
             options.add_argument('--no-sandbox')
             options.add_argument('--disable-dev-shm-usage')
