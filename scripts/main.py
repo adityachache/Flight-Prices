@@ -142,9 +142,9 @@ class Scraper:
                 EC.presence_of_all_elements_located((By.CLASS_NAME, "DealARIADescriptor_DealARIADescriptor__YWUwN"))
             )
             webpage = driver.page_source
-            # print(webpage)
+            print(webpage)
             soup = BeautifulSoup(webpage, "lxml")
-            # print("soup", soup)
+            print("soup", soup)
             scraped_data = soup.find_all("div", class_="DealARIADescriptor_DealARIADescriptor__YWUwN")
             driver.quit()
         except Exception as e:
