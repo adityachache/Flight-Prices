@@ -1,6 +1,9 @@
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from bs4 import BeautifulSoup
-import requests
-import lxml
 import pymongo
 from datetime import datetime
 from event_logger import EventLogger
@@ -29,6 +32,8 @@ class DatabaseHandler:
         return self.collection.find_one(query)
 
     def insert_many_documents(self, documents_list):
+        if not documents_list:
+            raise ValueError("documents_list is empty, cannot insert into MongoDB")
         self.collection.insert_many(documents_list, ordered=True)
         print('data inserted in MongoDB')
 
@@ -98,6 +103,8 @@ class Scraper:
         handler_to_add = DatabaseHandler("ETL_Data", "Airline_Data")
         handler_to_insert = DatabaseHandler("ETL_Data", "Event_Log")
         try:
+            if not data_array:
+                raise ValueError("data_array is empty, cannot save to MongoDB")
             handler_to_add.insert_many_documents(data_array)
         except Exception as e:
             event = EventLogger.log_event(e)
@@ -122,17 +129,30 @@ class Scraper:
 
         try:
             web_url = f"https://www.skyscanner.co.in/routes/{source_iata_code['value']}/{destination_iata_code['value']}/"
-            response = requests.get(url=web_url, headers=self.headers)
-            webpage = response.text
+            service = Service('chromedriver.exe')  # Update path to chromedriver
+            options = webdriver.ChromeOptions()
+            options.add_argument('--headless')
+            options.add_argument('--disable-gpu')
+            options.add_argument('--no-sandbox')
+            options.add_argument('--disable-dev-shm-usage')
+            driver = webdriver.Chrome(service=service, options=options)
 
+            driver.get(web_url)
+            WebDriverWait(driver, 20).until(
+                EC.presence_of_all_elements_located((By.CLASS_NAME, "DealARIADescriptor_DealARIADescriptor__YWUwN"))
+            )
+            webpage = driver.page_source
+            # print(webpage)
             soup = BeautifulSoup(webpage, "lxml")
+            # print("soup", soup)
             scraped_data = soup.find_all("div", class_="DealARIADescriptor_DealARIADescriptor__YWUwN")
+            driver.quit()
         except Exception as e:
             event = EventLogger.log_event(e)
             handler_to_insert.insert_document(event)
 
         data_to_save = self.extract_data(scraped_data)
-        print(data_to_save)
+        print("Data to save:", data_to_save)  # Add this line to check if data_to_save is populated
 
         self.save_data_to_db(data_to_save)
 
