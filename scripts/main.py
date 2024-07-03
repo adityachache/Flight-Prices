@@ -120,7 +120,6 @@ class Scraper:
         try:
             source_iata_code = handler.find_one_document({"name": "source_IATA"})
             destination_iata_code = handler.find_one_document({"name": "destination_IATA"})
-            print(destination_iata_code)
         except Exception as e:
             event = EventLogger.log_event(e)
             handler_to_insert.insert_document(event)
@@ -131,8 +130,9 @@ class Scraper:
             webpage = response.text
 
             soup = BeautifulSoup(webpage, "lxml")
+            print("soup", soup)
             scraped_data = soup.find_all("div", class_="DealARIADescriptor_DealARIADescriptor__YWUwN")
-            print(scraped_data)
+            print("scraped data:", scraped_data)
         except Exception as e:
             event = EventLogger.log_event(e)
             handler_to_insert.insert_document(event)
