@@ -176,6 +176,7 @@ class FlightOffers:
         handler_to_add = DatabaseHandler("ETL_Data", "Airline_Data")
         handler_to_add.insert_many_documents(data)
 
+# test commit in mac
 
 if __name__ == "__main__":
     finder = FlightOffers()
